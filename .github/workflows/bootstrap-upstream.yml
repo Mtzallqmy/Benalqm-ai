@@ -5,12 +5,15 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/bootstrap-upstream.yml'
+  issues:
+    types: [opened]
 
 permissions:
   contents: write
 
 jobs:
   import-upstream:
+    if: github.event_name == 'push' || github.event.issue.title == '[bootstrap] import DeerFlow baseline'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout target repository
