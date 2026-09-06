@@ -1,4 +1,5 @@
 import "@/styles/globals.css";
+import "@/styles/moataz-ai.css";
 
 import { type Metadata } from "next";
 
@@ -7,8 +8,12 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { DEFAULT_LOCALE } from "@/core/i18n/locale";
 
 export const metadata: Metadata = {
-  title: MOATAZ_AI_BRAND.name,
+  title: {
+    default: MOATAZ_AI_BRAND.name,
+    template: `%s · ${MOATAZ_AI_BRAND.name}`,
+  },
   description: MOATAZ_AI_BRAND.description.en,
+  applicationName: MOATAZ_AI_BRAND.name,
 };
 
 export default function RootLayout({
