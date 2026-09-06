@@ -5,19 +5,16 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/bootstrap-upstream.yml'
-  issues:
-    types: [opened]
 
 permissions:
   contents: write
 
 jobs:
   import-upstream:
-    if: github.event_name == 'push' || github.event.issue.title == '[bootstrap] import DeerFlow baseline'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout target repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
 
@@ -31,8 +28,12 @@ jobs:
           git clone --filter=blob:none --no-checkout "https://github.com/${UPSTREAM_REPOSITORY}.git" "${temp_dir}/deer-flow"
           git -C "${temp_dir}/deer-flow" checkout --detach "${UPSTREAM_COMMIT}"
 
+          # GitHub's Actions token for this bootstrap is intentionally not granted
+          # permission to replace workflow files. Preserve this repository's own
+          # workflow directory and import the complete application/runtime source.
           rsync -a --delete \
             --exclude='.git/' \
+            --exclude='.github/workflows/' \
             "${temp_dir}/deer-flow/" \
             "${GITHUB_WORKSPACE}/"
 
@@ -44,7 +45,8 @@ jobs:
             "upstream_commit": "90359344323856ca31ba4b5e528ffa1c63782551",
             "upstream_version": "2.1.0",
             "license": "MIT",
-            "import_strategy": "pinned upstream baseline"
+            "import_strategy": "pinned upstream baseline",
+            "excluded_from_import": [".github/workflows/"]
           }
           EOF
 
