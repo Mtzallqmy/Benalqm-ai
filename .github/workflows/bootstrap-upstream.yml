@@ -1,0 +1,55 @@
+name: Bootstrap DeerFlow upstream baseline
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/bootstrap-upstream.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  import-upstream:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout target repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Import pinned DeerFlow baseline
+        env:
+          UPSTREAM_REPOSITORY: bytedance/deer-flow
+          UPSTREAM_COMMIT: 90359344323856ca31ba4b5e528ffa1c63782551
+        run: |
+          set -euo pipefail
+          temp_dir="$(mktemp -d)"
+          git clone --filter=blob:none --no-checkout "https://github.com/${UPSTREAM_REPOSITORY}.git" "${temp_dir}/deer-flow"
+          git -C "${temp_dir}/deer-flow" checkout --detach "${UPSTREAM_COMMIT}"
+
+          rsync -a --delete \
+            --exclude='.git/' \
+            "${temp_dir}/deer-flow/" \
+            "${GITHUB_WORKSPACE}/"
+
+          mkdir -p "${GITHUB_WORKSPACE}/.moataz-ai"
+          cat > "${GITHUB_WORKSPACE}/.moataz-ai/upstream-baseline.json" <<'EOF'
+          {
+            "product": "moataz ai",
+            "upstream_repository": "https://github.com/bytedance/deer-flow",
+            "upstream_commit": "90359344323856ca31ba4b5e528ffa1c63782551",
+            "upstream_version": "2.1.0",
+            "license": "MIT",
+            "import_strategy": "pinned upstream baseline"
+          }
+          EOF
+
+      - name: Commit imported baseline
+        run: |
+          set -euo pipefail
+          git config user.name "moataz-ai-bootstrap"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "chore: import DeerFlow 2.1.0 upstream baseline"
+          git push origin HEAD:main
