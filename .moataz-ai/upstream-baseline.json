@@ -1,0 +1,9 @@
+{
+  "product": "moataz ai",
+  "upstream_repository": "https://github.com/bytedance/deer-flow",
+  "upstream_commit": "90359344323856ca31ba4b5e528ffa1c63782551",
+  "upstream_version": "2.1.0",
+  "license": "MIT",
+  "import_strategy": "pinned upstream baseline",
+  "excluded_from_import": [".github/workflows/"]
+}
