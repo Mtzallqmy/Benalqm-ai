@@ -19,88 +19,33 @@ import { cn } from "@/lib/utils";
 import { GithubIcon } from "./github-icon";
 import { Tooltip } from "./tooltip";
 
-export function WorkspaceContainer({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"div">) {
-  return (
-    <div className={cn("flex h-screen w-full flex-col", className)} {...props}>
-      {children}
-    </div>
-  );
+export function WorkspaceContainer({ className, children, ...props }: React.ComponentProps<"div">) {
+  return <div className={cn("moataz-viewport-height flex h-screen w-full flex-col", className)} {...props}>{children}</div>;
 }
 
-export function WorkspaceHeader({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"header">) {
+export function WorkspaceHeader({ className, children, ...props }: React.ComponentProps<"header">) {
   const { t } = useI18n();
   const pathname = usePathname();
   const segments = useMemo(() => {
     const parts = pathname?.split("/") || [];
-    if (parts.length > 0) {
-      return parts.slice(1, 3);
-    }
+    if (parts.length > 0) return parts.slice(1, 3);
   }, [pathname]);
   return (
-    <header
-      className={cn(
-        "top-0 right-0 left-0 z-20 flex h-16 shrink-0 items-center justify-between gap-2 border-b backdrop-blur-sm transition-[width,height] ease-out group-has-data-[collapsible=icon]/sidebar-wrapper:h-12",
-        className,
-      )}
-      {...props}
-    >
+    <header className={cn("top-0 right-0 left-0 z-20 flex h-14 shrink-0 items-center justify-between gap-2 border-b bg-background/72 backdrop-blur-xl transition-[width,height] ease-out md:h-16 group-has-data-[collapsible=icon]/sidebar-wrapper:h-12", className)} {...props}>
       <div className="flex min-w-0 items-center gap-2 px-2 sm:px-4">
-        <SidebarTrigger className="md:hidden" />
+        <SidebarTrigger className="min-h-10 min-w-10 md:hidden" />
         <Breadcrumb>
           <BreadcrumbList>
-            {segments?.[0] && (
-              <BreadcrumbItem className="hidden md:block">
-                <BreadcrumbLink asChild>
-                  <Link href={`/${segments[0]}`}>
-                    {nameOfSegment(segments[0], t)}
-                  </Link>
-                </BreadcrumbLink>
-              </BreadcrumbItem>
-            )}
-            {segments?.[1] && (
-              <>
-                <BreadcrumbSeparator className="hidden md:block" />
-                <BreadcrumbItem>
-                  {segments.length >= 2 ? (
-                    <BreadcrumbLink asChild>
-                      <Link href={`/${segments[0]}/${segments[1]}`}>
-                        {nameOfSegment(segments[1], t)}
-                      </Link>
-                    </BreadcrumbLink>
-                  ) : (
-                    <BreadcrumbPage>
-                      {nameOfSegment(segments[1], t)}
-                    </BreadcrumbPage>
-                  )}
-                </BreadcrumbItem>
-              </>
-            )}
-            {children && (
-              <>
-                <BreadcrumbSeparator />
-                {children}
-              </>
-            )}
+            {segments?.[0] && <BreadcrumbItem className="hidden md:block"><BreadcrumbLink asChild><Link href={`/${segments[0]}`}>{nameOfSegment(segments[0], t)}</Link></BreadcrumbLink></BreadcrumbItem>}
+            {segments?.[1] && <><BreadcrumbSeparator className="hidden md:block" /><BreadcrumbItem>{segments.length >= 2 ? <BreadcrumbLink asChild><Link href={`/${segments[0]}/${segments[1]}`}>{nameOfSegment(segments[1], t)}</Link></BreadcrumbLink> : <BreadcrumbPage>{nameOfSegment(segments[1], t)}</BreadcrumbPage>}</BreadcrumbItem></>}
+            {children && <><BreadcrumbSeparator />{children}</>}
           </BreadcrumbList>
         </Breadcrumb>
       </div>
-      <div className="pr-4">
+      <div className="pe-2 sm:pe-4">
         <Tooltip content={t.workspace.githubTooltip}>
-          <a
-            href="https://github.com/bytedance/deer-flow"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="opacity-75 transition hover:opacity-100"
-          >
-            <GithubIcon className="size-6" />
+          <a href="https://github.com/Mtzallqmy/Benalqm-ai" target="_blank" rel="noopener noreferrer" className="grid min-h-10 min-w-10 place-items-center rounded-xl opacity-75 transition hover:bg-muted hover:opacity-100">
+            <GithubIcon className="size-5 md:size-6" />
           </a>
         </Tooltip>
       </div>
@@ -108,30 +53,15 @@ export function WorkspaceHeader({
   );
 }
 
-export function WorkspaceBody({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<"main">) {
-  return (
-    <main
-      className={cn(
-        "relative flex min-h-0 w-full flex-1 flex-col items-center",
-        className,
-      )}
-      {...props}
-    >
-      <div className="flex h-full w-full flex-col items-center">{children}</div>
-    </main>
-  );
+export function WorkspaceBody({ className, children, ...props }: React.ComponentProps<"main">) {
+  return <main className={cn("relative flex min-h-0 w-full flex-1 flex-col items-center", className)} {...props}><div className="flex h-full w-full flex-col items-center">{children}</div></main>;
 }
 
-function nameOfSegment(
-  segment: string | undefined,
-  t: ReturnType<typeof useI18n>["t"],
-) {
+function nameOfSegment(segment: string | undefined, t: ReturnType<typeof useI18n>["t"]) {
   if (!segment) return t.common.home;
   if (segment === "workspace") return t.breadcrumb.workspace;
   if (segment === "chats") return t.breadcrumb.chats;
+  if (segment === "agents") return t.sidebar.agents;
+  if (segment === "scheduled-tasks") return t.sidebar.scheduledTasks;
   return segment[0]?.toUpperCase() + segment.slice(1);
 }

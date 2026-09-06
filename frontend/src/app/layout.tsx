@@ -1,6 +1,7 @@
 import "@/styles/globals.css";
 import "@/styles/moataz-ai.css";
 import "@/styles/rtl.css";
+import "@/styles/mobile-workspace.css";
 
 import { type Metadata } from "next";
 

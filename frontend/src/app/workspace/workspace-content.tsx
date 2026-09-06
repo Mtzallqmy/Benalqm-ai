@@ -5,14 +5,13 @@ import { QueryClientProvider } from "@/components/query-client-provider";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { CommandPalette } from "@/components/workspace/command-palette";
 import { GatewayOfflineBanner } from "@/components/workspace/gateway-offline-banner";
+import { MobileBottomNav } from "@/components/workspace/mobile/mobile-bottom-nav";
 import { ModelLoadErrorBanner } from "@/components/workspace/model-load-error-banner";
 import { SettingsDialogHost } from "@/components/workspace/settings";
 import { WorkspaceSettingsDeepLink } from "@/components/workspace/workspace-settings-deep-link";
 import { WorkspaceSidebar } from "@/components/workspace/workspace-sidebar";
 
-function parseSidebarOpenCookie(
-  value: string | undefined,
-): boolean | undefined {
+function parseSidebarOpenCookie(value: string | undefined): boolean | undefined {
   if (value === "true") return true;
   if (value === "false") return false;
   return undefined;
@@ -26,19 +25,18 @@ export async function WorkspaceContent({
   gatewayUnavailable?: boolean;
 }>) {
   const cookieStore = await cookies();
-  const initialSidebarOpen = parseSidebarOpenCookie(
-    cookieStore.get("sidebar_state")?.value,
-  );
+  const initialSidebarOpen = parseSidebarOpenCookie(cookieStore.get("sidebar_state")?.value);
 
   return (
     <QueryClientProvider>
-      <SidebarProvider className="h-screen" defaultOpen={initialSidebarOpen}>
+      <SidebarProvider className="h-[100dvh]" defaultOpen={initialSidebarOpen}>
         <WorkspaceSidebar />
-        <SidebarInset className="min-w-0">
+        <SidebarInset data-moataz-workspace-inset className="min-w-0 overflow-hidden">
           <GatewayOfflineBanner gatewayUnavailable={gatewayUnavailable} />
           <ModelLoadErrorBanner gatewayUnavailable={gatewayUnavailable} />
           {children}
         </SidebarInset>
+        <MobileBottomNav />
       </SidebarProvider>
       <CommandPalette />
       <SettingsDialogHost />
