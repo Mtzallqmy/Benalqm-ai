@@ -2,7 +2,8 @@ import type { Locale } from "./locale";
 import type { Translations } from "./locales";
 
 const translationLoaders: Record<Locale, () => Promise<Translations>> = {
-  "en-US": async () => (await import("./locales/en-US")).enUS,
+  "ar-SA": async () => (await import("./locales/ar-SA")).arSA,
+  "en-US": async () => (await import("./locales/en-moataz")).enMoataz,
   "zh-CN": async () => (await import("./locales/zh-CN")).zhCN,
 };
 

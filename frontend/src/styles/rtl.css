@@ -1,0 +1,28 @@
+/* Directional behavior for moataz ai. Logical spacing remains handled by
+ * Tailwind; this file protects technical content from accidental RTL mirroring.
+ */
+
+[dir="rtl"] {
+  text-align: start;
+}
+
+[dir="rtl"] :where(pre, code, kbd, samp, .font-mono, [data-code], [data-language], .cm-editor, .cm-scroller, .xterm, .shiki) {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: isolate;
+}
+
+[dir="rtl"] :where(input[type="email"], input[type="url"], input[data-ltr], textarea[data-ltr]) {
+  direction: ltr;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+[dir="rtl"] .rtl-flip {
+  transform: scaleX(-1);
+}
+
+[dir="rtl"] .ltr-isolate {
+  direction: ltr;
+  unicode-bidi: isolate;
+}

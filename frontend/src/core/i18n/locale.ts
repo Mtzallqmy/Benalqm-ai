@@ -1,15 +1,24 @@
-export const SUPPORTED_LOCALES = ["en-US", "zh-CN"] as const;
+export const SUPPORTED_LOCALES = ["ar-SA", "en-US", "zh-CN"] as const;
 export type Locale = (typeof SUPPORTED_LOCALES)[number];
-export const DEFAULT_LOCALE: Locale = "en-US";
+export type LocaleDirection = "rtl" | "ltr";
+export const DEFAULT_LOCALE: Locale = "ar-SA";
 
 export function isLocale(value: string): value is Locale {
   return (SUPPORTED_LOCALES as readonly string[]).includes(value);
 }
 
+export function isRtlLocale(locale: string | Locale): boolean {
+  return locale.toLowerCase().startsWith("ar");
+}
+
+export function getLocaleDirection(locale: string | Locale): LocaleDirection {
+  return isRtlLocale(locale) ? "rtl" : "ltr";
+}
+
 export function getLocaleByLang(lang: string): Locale {
   const normalizedLang = lang.toLowerCase();
   for (const locale of SUPPORTED_LOCALES) {
-    if (locale.startsWith(normalizedLang)) {
+    if (locale.toLowerCase().startsWith(normalizedLang)) {
       return locale;
     }
   }
@@ -33,14 +42,14 @@ export function normalizeLocale(locale: string | null | undefined): Locale {
     return locale;
   }
 
-  if (locale.toLowerCase().startsWith("zh")) {
-    return "zh-CN";
-  }
+  const normalized = locale.toLowerCase();
+  if (normalized.startsWith("ar")) return "ar-SA";
+  if (normalized.startsWith("en")) return "en-US";
+  if (normalized.startsWith("zh")) return "zh-CN";
 
   return DEFAULT_LOCALE;
 }
 
-// Helper function to detect browser locale
 export function detectLocale(): Locale {
   if (typeof window === "undefined") {
     return DEFAULT_LOCALE;

@@ -10,6 +10,7 @@ import {
 } from "react";
 
 import type { Locale } from "@/core/i18n";
+import { getLocaleDirection } from "@/core/i18n/locale";
 import type { Translations } from "@/core/i18n/locales";
 
 import { clientTranslations } from "./client-translations";
@@ -39,13 +40,19 @@ export function I18nProvider({
     setTranslations(clientTranslations[newLocale]);
   }, []);
 
+  const direction = getLocaleDirection(locale);
+
   useEffect(() => {
     document.documentElement.lang = locale;
-  }, [locale]);
+    document.documentElement.dir = direction;
+    document.documentElement.dataset.locale = locale;
+  }, [locale, direction]);
 
   return (
     <I18nContext.Provider value={{ locale, setLocale: handleSetLocale, t }}>
-      {children}
+      <div className="contents" lang={locale} dir={direction} data-locale={locale}>
+        {children}
+      </div>
     </I18nContext.Provider>
   );
 }

@@ -1,5 +1,6 @@
 import "@/styles/globals.css";
 import "@/styles/moataz-ai.css";
+import "@/styles/rtl.css";
 
 import { type Metadata } from "next";
 
@@ -22,6 +23,7 @@ export default function RootLayout({
   return (
     <html
       lang={DEFAULT_LOCALE}
+      dir="rtl"
       suppressContentEditableWarning
       suppressHydrationWarning
     >
