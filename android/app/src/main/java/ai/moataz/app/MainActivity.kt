@@ -5,7 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.lifecycle.viewmodel.compose.viewModel
-import ai.moataz.app.ui.MoatazApp
+import ai.moataz.app.ui.MoatazNativeRoot
 import ai.moataz.app.ui.theme.MoatazTheme
 
 class MainActivity : ComponentActivity() {
@@ -14,8 +14,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             MoatazTheme {
-                val viewModel: MoatazViewModel = viewModel()
-                MoatazApp(viewModel)
+                val agentViewModel: MoatazViewModel = viewModel()
+                val controlViewModel: ControlCenterViewModel = viewModel()
+                MoatazNativeRoot(
+                    agentViewModel = agentViewModel,
+                    controlViewModel = controlViewModel,
+                )
             }
         }
     }
