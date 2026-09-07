@@ -1,15 +1,14 @@
 package ai.moataz.app;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.content.Context;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -34,19 +33,19 @@ public class MainActivity extends Activity {
         prefs = getSharedPreferences(PREFS, MODE_PRIVATE);
 
         String deepLinkUrl = readDeepLinkUrl(getIntent());
-        if (deepLinkUrl != null) {
+        if (!isBlank(deepLinkUrl)) {
             openServer(deepLinkUrl, false);
             return;
         }
 
         String configured = prefs.getString(SERVER_URL, "");
-        if ((configured == null || configured.isBlank()) && !BuildConfig.DEFAULT_ORIGIN.isBlank()) {
+        if (isBlank(configured) && !isBlank(BuildConfig.DEFAULT_ORIGIN)) {
             configured = BuildConfig.DEFAULT_ORIGIN;
             prefs.edit().putString(SERVER_URL, configured).apply();
         }
 
         boolean forceSettings = ACTION_SETTINGS.equals(getIntent().getAction());
-        if (!forceSettings && configured != null && !configured.isBlank()) {
+        if (!forceSettings && !isBlank(configured)) {
             openServer(configured, false);
             return;
         }
@@ -161,8 +160,12 @@ public class MainActivity extends Activity {
     }
 
     private static String workspaceUrl(String origin) {
-        String lower = origin.toLowerCase();
+        String lower = origin.toLowerCase(java.util.Locale.ROOT);
         return lower.contains("/workspace") ? origin : origin + "/workspace";
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
     private int dp(int value) {

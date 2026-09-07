@@ -13,7 +13,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.webkit.CookieManager;
-import android.webkit.DownloadListener;
 import android.webkit.URLUtil;
 import android.webkit.ValueCallback;
 import android.webkit.WebChromeClient;
@@ -38,7 +37,7 @@ public class MoatazWebViewActivity extends Activity {
         getWindow().setNavigationBarColor(Color.rgb(8, 11, 20));
 
         String url = getIntent().getStringExtra(MainActivity.EXTRA_URL);
-        if (url == null || url.isBlank()) {
+        if (url == null || url.trim().isEmpty()) {
             finish();
             return;
         }

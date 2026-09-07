@@ -8,9 +8,8 @@ final class ServerUrlPolicy {
     private ServerUrlPolicy() {}
 
     static String normalize(String raw) {
-        if (raw == null) throw new IllegalArgumentException("Server URL is required");
+        if (isBlank(raw)) throw new IllegalArgumentException("Server URL is required");
         String value = raw.trim();
-        if (value.isEmpty()) throw new IllegalArgumentException("Server URL is required");
         if (!value.contains("://")) value = "http://" + value;
 
         try {
@@ -19,7 +18,7 @@ final class ServerUrlPolicy {
             if (!scheme.equals("http") && !scheme.equals("https")) {
                 throw new IllegalArgumentException("Only http:// and https:// are supported");
             }
-            if (uri.getHost() == null || uri.getHost().isBlank()) {
+            if (isBlank(uri.getHost())) {
                 throw new IllegalArgumentException("Server URL must include a host");
             }
             if (uri.getUserInfo() != null) {
@@ -36,14 +35,13 @@ final class ServerUrlPolicy {
             );
             String result = normalized.toString();
             return result.endsWith("/") ? result.substring(0, result.length() - 1) : result;
-        } catch (URISyntaxException | IllegalArgumentException error) {
-            if (error instanceof IllegalArgumentException) throw (IllegalArgumentException) error;
+        } catch (URISyntaxException error) {
             throw new IllegalArgumentException("Invalid server URL", error);
         }
     }
 
     static boolean isTrustedOrigin(String serverUrl, String trustedOrigin) {
-        if (trustedOrigin == null || trustedOrigin.isBlank()) return false;
+        if (isBlank(trustedOrigin)) return false;
         try {
             URI server = new URI(normalize(serverUrl));
             URI trusted = new URI(normalize(trustedOrigin));
@@ -61,9 +59,13 @@ final class ServerUrlPolicy {
     }
 
     private static String cleanPath(String path) {
-        if (path == null || path.isBlank() || "/".equals(path)) return "";
+        if (isBlank(path) || "/".equals(path)) return "";
         String cleaned = path;
         while (cleaned.endsWith("/")) cleaned = cleaned.substring(0, cleaned.length() - 1);
         return cleaned;
+    }
+
+    private static boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 }
