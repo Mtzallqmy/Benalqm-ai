@@ -77,10 +77,8 @@ dependencies {
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
 
-    val okhttpBom = platform("com.squareup.okhttp3:okhttp-bom:5.5.0")
-    implementation(okhttpBom)
-    implementation("com.squareup.okhttp3:okhttp")
-    debugImplementation("com.squareup.okhttp3:logging-interceptor")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+    debugImplementation("com.squareup.okhttp3:logging-interceptor:4.12.0")
 
     debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
