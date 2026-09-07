@@ -1,18 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">moataz ai</string>
-    <string name="server_setup_description">Connect this Android app to your moataz ai server. HTTPS is recommended; private HTTP addresses are intended only for a trusted LAN.</string>
-    <string name="server_url_hint">https://your-server.example or 192.168.1.20:2026</string>
-    <string name="save_and_open">Save and open</string>
-    <string name="clear_server">Clear server</string>
-    <string name="server_cleared">Saved server cleared</string>
-    <string name="http_local_warning">Security: use HTTP only on a trusted private network. Never expose the local Gateway directly to the public internet.</string>
-    <string name="invalid_server_url">Enter a valid http:// or https:// server address.</string>
-    <string name="no_app_for_link">No app is available to open this link.</string>
-    <string name="unsafe_page_blocked">Unsafe page blocked.</string>
-    <string name="no_file_picker">No file picker is available.</string>
-    <string name="download_started">Download started</string>
-    <string name="download_failed">Download could not be started.</string>
-    <string name="download_permission_denied">Storage permission is required to save downloads on Android 8/9.</string>
-    <string name="server_settings_shortcut">Server settings</string>
+    <string name="nav_chat">Chat</string>
+    <string name="nav_threads">Threads</string>
+    <string name="nav_flow">Flow</string>
+    <string name="nav_settings">Settings</string>
+
+    <string name="new_conversation">New conversation</string>
+    <string name="welcome_title">What are we working on?</string>
+    <string name="welcome_body">This is the native Android client for the same DeerFlow runtime, skills, tools, sub-agents and models used by moataz ai.</string>
+    <string name="connect_to_server">Connect moataz ai</string>
+    <string name="configure_server">Configure the Gateway once, then work here directly — no WebView.</string>
+    <string name="open_settings">Open settings</string>
+    <string name="composer_hint">Ask moataz ai…</string>
+    <string name="send">Send</string>
+    <string name="stop">Stop</string>
+    <string name="thinking">Thinking</string>
+    <string name="model">Model</string>
+    <string name="no_models">No models available</string>
+    <string name="default_model">Default model</string>
+    <string name="tool_calls">Tools: %1$s</string>
+
+    <string name="threads_title">Conversations</string>
+    <string name="threads_subtitle">Your DeerFlow threads are loaded from the Gateway, not stored as a fake local chat.</string>
+    <string name="refresh">Refresh</string>
+    <string name="no_threads">No conversations yet.</string>
+    <string name="loading">Loading…</string>
+
+    <string name="flow_title">Runtime flow</string>
+    <string name="flow_subtitle">Live visibility into Android → Gateway → DeerFlow agent → model/tools.</string>
+    <string name="android_client">Android client</string>
+    <string name="gateway">Gateway</string>
+    <string name="agent_runtime">Agent runtime</string>
+    <string name="model_provider">Model provider</string>
+    <string name="latency">Latency</string>
+    <string name="models">Models</string>
+    <string name="events">Events</string>
+    <string name="active_thread">Active thread</string>
+    <string name="run_state">Run state</string>
+    <string name="recent_events">Recent runtime events</string>
+    <string name="no_events">No runtime events yet.</string>
+
+    <string name="status_connected">Connected</string>
+    <string name="status_checking">Checking</string>
+    <string name="status_offline">Offline</string>
+    <string name="status_unauthorized">Authentication required</string>
+    <string name="status_not_configured">Not configured</string>
+    <string name="status_degraded">Degraded</string>
+
+    <string name="settings_title">Settings</string>
+    <string name="connection_section">Gateway connection</string>
+    <string name="server_origin">Server address</string>
+    <string name="server_url_hint">http://192.168.1.20:2026 or https://ai.example.com</string>
+    <string name="access_token">Access token (PAT)</string>
+    <string name="token_saved">An encrypted access token is saved on this device.</string>
+    <string name="token_optional_hint">Leave empty when authentication is disabled. Enter a PAT when the Gateway requires authentication.</string>
+    <string name="save_connect">Save &amp; test connection</string>
+    <string name="remove_token">Remove saved token</string>
+    <string name="security_lan_warning">Plain HTTP is allowed for trusted local networks. Use HTTPS outside your LAN.</string>
+    <string name="preferences">Agent preferences</string>
+    <string name="thinking_mode">Enable thinking when the selected model supports it</string>
+    <string name="about">About</string>
+    <string name="about_text">moataz ai is a new product interface built on the open-source DeerFlow project. The agent harness, runtime and upstream skills remain attributed to their original source.</string>
+    <string name="upstream_source">Source: ByteDance DeerFlow · MIT License</string>
+    <string name="version">Version %1$s</string>
+    <string name="native_client">Native Kotlin / Jetpack Compose client</string>
+    <string name="android_support">Android 8.0 (API 26) and newer</string>
+
+    <string name="dismiss">Dismiss</string>
+    <string name="copy_diagnostics">Copy diagnostics</string>
+    <string name="diagnostics_copied">Diagnostics copied</string>
 </resources>
