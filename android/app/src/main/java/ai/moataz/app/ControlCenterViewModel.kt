@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import ai.moataz.app.data.AppPreferences
+import ai.moataz.app.data.GatewayException
 import ai.moataz.app.data.WorkspaceGatewayClient
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -11,7 +12,9 @@ import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import org.json.JSONArray
 import org.json.JSONObject
 import java.time.Instant
 
@@ -69,30 +72,29 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     val state: StateFlow<ControlCenterState> = mutableState.asStateFlow()
 
     fun setSection(section: CapabilitySection) {
-        mutableState.value = mutableState.value.copy(section = section)
+        mutableState.update { it.copy(section = section) }
     }
 
     fun setActiveThread(threadId: String?) {
         if (threadId == mutableState.value.activeThreadId) return
-        mutableState.value = mutableState.value.copy(activeThreadId = threadId)
+        mutableState.update { it.copy(activeThreadId = threadId) }
         if (!threadId.isNullOrBlank()) refreshFiles()
     }
 
     fun dismissMessage() {
-        mutableState.value = mutableState.value.copy(error = null, notice = null)
+        mutableState.update { it.copy(error = null, notice = null) }
     }
 
     fun refreshAll() {
         viewModelScope.launch {
             val profile = preferences.load()
             if (profile.origin.isBlank()) {
-                mutableState.value = mutableState.value.copy(
-                    origin = "",
-                    error = "Configure the Gateway connection first.",
-                )
+                mutableState.update {
+                    it.copy(origin = "", refreshing = false, error = "Configure the Gateway connection first.")
+                }
                 return@launch
             }
-            mutableState.value = mutableState.value.copy(origin = profile.origin, refreshing = true, error = null)
+            mutableState.update { it.copy(origin = profile.origin, refreshing = true, error = null) }
             coroutineScope {
                 listOf(
                     async { refreshProvidersInternal() },
@@ -104,10 +106,9 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
                     async { refreshFilesInternal() },
                 ).awaitAll()
             }
-            mutableState.value = mutableState.value.copy(
-                refreshing = false,
-                lastFullRefresh = Instant.now().toString(),
-            )
+            mutableState.update {
+                it.copy(refreshing = false, lastFullRefresh = Instant.now().toString())
+            }
         }
     }
 
@@ -119,10 +120,21 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     fun refreshScheduledTasks() = launchRefresh(::refreshTasksInternal)
     fun refreshFiles() = launchRefresh(::refreshFilesInternal)
 
+    /**
+     * DeerFlow's dynamic-provider default is a model registry name, not a provider id.
+     * Choosing a provider here selects its first discovered model as the default model.
+     * A later UI layer can expose per-model default selection without changing this API.
+     */
     fun setDefaultProvider(providerId: String) = action("provider-default") { client ->
-        client.setDefaultProvider(providerId)
+        val provider = mutableState.value.providers.firstOrNull { it.id == providerId }
+            ?: error("Provider not found")
+        val models = provider.raw.optJSONArray("models") ?: JSONArray()
+        val firstModel = models.optJSONObject(0) ?: error("Provider has no discovered models")
+        val registryName = firstModel.optString("registry_name")
+        require(registryName.isNotBlank()) { "Provider model does not have a registry name" }
+        client.putRaw("/api/providers/default", JSONObject().put("model_name", registryName))
         refreshProvidersInternal()
-        "Default provider updated."
+        "Default model updated."
     }
 
     fun deleteProvider(providerId: String) = action("provider-delete") { client ->
@@ -139,15 +151,13 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
 
     fun testProvider(type: String, baseUrl: String, apiKey: String, callback: (Result<JSONObject>) -> Unit) {
         viewModelScope.launch {
-            runCatching { client().testProvider(type, baseUrl, apiKey) }
-                .also(callback)
+            runCatching { client().testProvider(type, baseUrl, apiKey) }.also(callback)
         }
     }
 
     fun discoverProvider(type: String, baseUrl: String, apiKey: String, callback: (Result<JSONObject>) -> Unit) {
         viewModelScope.launch {
-            runCatching { client().discoverProviderModels(type, baseUrl, apiKey) }
-                .also(callback)
+            runCatching { client().discoverProviderModels(type, baseUrl, apiKey) }.also(callback)
         }
     }
 
@@ -218,25 +228,25 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
 
     fun addMemoryFact(content: String, category: String = "context", confidence: Double = 0.8) = action("memory-add") { client ->
         val memory = client.createMemoryFact(content, category, confidence)
-        mutableState.value = mutableState.value.copy(memory = memory)
+        mutableState.update { it.copy(memory = memory) }
         "Memory fact saved."
     }
 
     fun deleteMemoryFact(id: String) = action("memory-delete-$id") { client ->
         val memory = client.deleteMemoryFact(id)
-        mutableState.value = mutableState.value.copy(memory = memory)
+        mutableState.update { it.copy(memory = memory) }
         "Memory fact deleted."
     }
 
     fun clearMemory() = action("memory-clear") { client ->
         val memory = client.clearMemory()
-        mutableState.value = mutableState.value.copy(memory = memory)
+        mutableState.update { it.copy(memory = memory) }
         "Memory cleared."
     }
 
     fun reloadMemoryData() = action("memory-reload") { client ->
         val memory = client.reloadMemory()
-        mutableState.value = mutableState.value.copy(memory = memory)
+        mutableState.update { it.copy(memory = memory) }
         "Memory reloaded."
     }
 
@@ -276,10 +286,12 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
 
     fun navigateBrowser(url: String) = action("browser-navigate") { client ->
         val result = client.navigateBrowser(requireActiveThread(), url)
-        mutableState.value = mutableState.value.copy(
-            browser = result,
-            browserStatus = CapabilityStatus(CapabilityHealth.Ready, result.title, Instant.now().toString()),
-        )
+        mutableState.update {
+            it.copy(
+                browser = result,
+                browserStatus = CapabilityStatus(CapabilityHealth.Ready, result.title, Instant.now().toString()),
+            )
+        }
         "Browser navigated to ${result.url}"
     }
 
@@ -302,36 +314,58 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
         operation: suspend (WorkspaceGatewayClient) -> String,
     ) {
         viewModelScope.launch {
-            mutableState.value = mutableState.value.copy(actionInProgress = name, error = null, notice = null)
+            mutableState.update { it.copy(actionInProgress = name, error = null, notice = null) }
             runCatching { operation(client()) }
                 .onSuccess { message ->
-                    mutableState.value = mutableState.value.copy(actionInProgress = null, notice = message)
+                    mutableState.update { it.copy(actionInProgress = null, notice = message) }
                 }
                 .onFailure { throwable ->
-                    mutableState.value = mutableState.value.copy(
-                        actionInProgress = null,
-                        error = readableError(throwable),
-                    )
+                    mutableState.update {
+                        it.copy(actionInProgress = null, error = readableError(throwable))
+                    }
                 }
         }
     }
 
     private suspend fun refreshProvidersInternal() {
         updateProviderStatus(CapabilityHealth.Loading)
-        runCatching { client().listProviders() }
-            .onSuccess {
-                mutableState.value = mutableState.value.copy(providers = it)
-                updateProviderStatus(CapabilityHealth.Ready, "${it.size} providers")
+        runCatching {
+            val client = client()
+            val rawList = client.getRaw("/api/providers")
+            val providersArray = rawList as? JSONArray ?: JSONArray()
+            val defaultModel = runCatching {
+                (client.getRaw("/api/providers/default") as? JSONObject)?.optString("model_name").orEmpty()
+            }.getOrDefault("")
+
+            (0 until providersArray.length()).mapNotNull { index ->
+                val item = providersArray.optJSONObject(index) ?: return@mapNotNull null
+                val models = item.optJSONArray("models") ?: JSONArray()
+                val providerIsDefault = (0 until models.length()).any { modelIndex ->
+                    models.optJSONObject(modelIndex)?.optString("registry_name") == defaultModel && defaultModel.isNotBlank()
+                }
+                WorkspaceGatewayClient.Provider(
+                    id = item.optString("id"),
+                    name = item.optString("name", "Provider"),
+                    type = item.optString("provider_type", "openai_compatible"),
+                    baseUrl = item.optString("base_url"),
+                    enabled = true,
+                    isDefault = providerIsDefault,
+                    modelCount = models.length(),
+                    raw = item,
+                )
             }
-            .onFailure { updateProviderFailure(it) }
+        }.onSuccess { providers ->
+            mutableState.update { it.copy(providers = providers) }
+            updateProviderStatus(CapabilityHealth.Ready, "${providers.size} providers")
+        }.onFailure { updateProviderFailure(it) }
     }
 
     private suspend fun refreshSkillsInternal() {
         updateSkillsStatus(CapabilityHealth.Loading)
         runCatching { client().listSkills() }
-            .onSuccess {
-                mutableState.value = mutableState.value.copy(skills = it)
-                updateSkillsStatus(CapabilityHealth.Ready, "${it.size} skills")
+            .onSuccess { skills ->
+                mutableState.update { it.copy(skills = skills) }
+                updateSkillsStatus(CapabilityHealth.Ready, "${skills.size} skills")
             }
             .onFailure { updateSkillsFailure(it) }
     }
@@ -339,9 +373,9 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     private suspend fun refreshMcpInternal() {
         updateMcpStatus(CapabilityHealth.Loading)
         runCatching { client().listMcpServers() }
-            .onSuccess {
-                mutableState.value = mutableState.value.copy(mcpServers = it)
-                updateMcpStatus(CapabilityHealth.Ready, "${it.size} MCP servers")
+            .onSuccess { servers ->
+                mutableState.update { it.copy(mcpServers = servers) }
+                updateMcpStatus(CapabilityHealth.Ready, "${servers.size} MCP servers")
             }
             .onFailure { updateMcpFailure(it) }
     }
@@ -349,9 +383,9 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     private suspend fun refreshSubagentsInternal() {
         updateSubagentsStatus(CapabilityHealth.Loading)
         runCatching { client().listSubagents() }
-            .onSuccess {
-                mutableState.value = mutableState.value.copy(subagents = it)
-                updateSubagentsStatus(CapabilityHealth.Ready, "${it.size} sub-agents")
+            .onSuccess { agents ->
+                mutableState.update { it.copy(subagents = agents) }
+                updateSubagentsStatus(CapabilityHealth.Ready, "${agents.size} sub-agents")
             }
             .onFailure { updateSubagentsFailure(it) }
     }
@@ -359,9 +393,9 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     private suspend fun refreshMemoryInternal() {
         updateMemoryStatus(CapabilityHealth.Loading)
         runCatching { client().getMemory() }
-            .onSuccess {
-                mutableState.value = mutableState.value.copy(memory = it)
-                updateMemoryStatus(CapabilityHealth.Ready, "${it.facts.size} facts")
+            .onSuccess { memory ->
+                mutableState.update { it.copy(memory = memory) }
+                updateMemoryStatus(CapabilityHealth.Ready, "${memory.facts.size} facts")
             }
             .onFailure { updateMemoryFailure(it) }
     }
@@ -369,9 +403,9 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     private suspend fun refreshTasksInternal() {
         updateTasksStatus(CapabilityHealth.Loading)
         runCatching { client().listScheduledTasks() }
-            .onSuccess {
-                mutableState.value = mutableState.value.copy(scheduledTasks = it)
-                updateTasksStatus(CapabilityHealth.Ready, "${it.size} tasks")
+            .onSuccess { tasks ->
+                mutableState.update { it.copy(scheduledTasks = tasks) }
+                updateTasksStatus(CapabilityHealth.Ready, "${tasks.size} tasks")
             }
             .onFailure { updateTasksFailure(it) }
     }
@@ -379,11 +413,13 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     private suspend fun refreshFilesInternal() {
         val threadId = mutableState.value.activeThreadId
         if (threadId.isNullOrBlank()) {
-            mutableState.value = mutableState.value.copy(
-                files = emptyList(),
-                uploadLimits = null,
-                filesStatus = CapabilityStatus(CapabilityHealth.Idle, "Open a conversation first."),
-            )
+            mutableState.update {
+                it.copy(
+                    files = emptyList(),
+                    uploadLimits = null,
+                    filesStatus = CapabilityStatus(CapabilityHealth.Idle, "Open a conversation first."),
+                )
+            }
             return
         }
         updateFilesStatus(CapabilityHealth.Loading)
@@ -393,7 +429,7 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
             val limits = runCatching { client.getUploadLimits(threadId) }.getOrNull()
             files to limits
         }.onSuccess { (files, limits) ->
-            mutableState.value = mutableState.value.copy(files = files, uploadLimits = limits)
+            mutableState.update { it.copy(files = files, uploadLimits = limits) }
             updateFilesStatus(CapabilityHealth.Ready, "${files.size} files")
         }.onFailure { updateFilesFailure(it) }
     }
@@ -402,7 +438,7 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
         val profile = preferences.load()
         require(profile.origin.isNotBlank()) { "Gateway is not configured." }
         if (profile.origin != mutableState.value.origin) {
-            mutableState.value = mutableState.value.copy(origin = profile.origin)
+            mutableState.update { it.copy(origin = profile.origin) }
         }
         return WorkspaceGatewayClient(profile.origin, profile.bearerToken)
     }
@@ -412,13 +448,13 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
             ?: error("Open a conversation before using thread files or browser controls.")
 
     private fun readableError(error: Throwable): String = when (error) {
-        is ai.moataz.app.data.GatewayException -> "HTTP ${error.statusCode}: ${error.message}"
+        is GatewayException -> "HTTP ${error.statusCode}: ${error.message}"
         else -> error.message ?: error::class.java.simpleName
     }
 
     private fun statusFor(error: Throwable): CapabilityStatus {
         val now = Instant.now().toString()
-        val gateway = error as? ai.moataz.app.data.GatewayException
+        val gateway = error as? GatewayException
         return when (gateway?.statusCode) {
             401, 403 -> CapabilityStatus(CapabilityHealth.Unauthorized, gateway.message, now)
             404, 501 -> CapabilityStatus(CapabilityHealth.Unavailable, gateway.message, now)
@@ -429,19 +465,19 @@ class ControlCenterViewModel(application: Application) : AndroidViewModel(applic
     private fun status(health: CapabilityHealth, message: String? = null) =
         CapabilityStatus(health, message, Instant.now().toString())
 
-    private fun updateProviderStatus(h: CapabilityHealth, m: String? = null) { mutableState.value = mutableState.value.copy(providerStatus = status(h, m)) }
-    private fun updateFilesStatus(h: CapabilityHealth, m: String? = null) { mutableState.value = mutableState.value.copy(filesStatus = status(h, m)) }
-    private fun updateSkillsStatus(h: CapabilityHealth, m: String? = null) { mutableState.value = mutableState.value.copy(skillsStatus = status(h, m)) }
-    private fun updateMcpStatus(h: CapabilityHealth, m: String? = null) { mutableState.value = mutableState.value.copy(mcpStatus = status(h, m)) }
-    private fun updateSubagentsStatus(h: CapabilityHealth, m: String? = null) { mutableState.value = mutableState.value.copy(subagentsStatus = status(h, m)) }
-    private fun updateMemoryStatus(h: CapabilityHealth, m: String? = null) { mutableState.value = mutableState.value.copy(memoryStatus = status(h, m)) }
-    private fun updateTasksStatus(h: CapabilityHealth, m: String? = null) { mutableState.value = mutableState.value.copy(tasksStatus = status(h, m)) }
+    private fun updateProviderStatus(h: CapabilityHealth, m: String? = null) { mutableState.update { it.copy(providerStatus = status(h, m)) } }
+    private fun updateFilesStatus(h: CapabilityHealth, m: String? = null) { mutableState.update { it.copy(filesStatus = status(h, m)) } }
+    private fun updateSkillsStatus(h: CapabilityHealth, m: String? = null) { mutableState.update { it.copy(skillsStatus = status(h, m)) } }
+    private fun updateMcpStatus(h: CapabilityHealth, m: String? = null) { mutableState.update { it.copy(mcpStatus = status(h, m)) } }
+    private fun updateSubagentsStatus(h: CapabilityHealth, m: String? = null) { mutableState.update { it.copy(subagentsStatus = status(h, m)) } }
+    private fun updateMemoryStatus(h: CapabilityHealth, m: String? = null) { mutableState.update { it.copy(memoryStatus = status(h, m)) } }
+    private fun updateTasksStatus(h: CapabilityHealth, m: String? = null) { mutableState.update { it.copy(tasksStatus = status(h, m)) } }
 
-    private fun updateProviderFailure(e: Throwable) { mutableState.value = mutableState.value.copy(providerStatus = statusFor(e)) }
-    private fun updateFilesFailure(e: Throwable) { mutableState.value = mutableState.value.copy(filesStatus = statusFor(e)) }
-    private fun updateSkillsFailure(e: Throwable) { mutableState.value = mutableState.value.copy(skillsStatus = statusFor(e)) }
-    private fun updateMcpFailure(e: Throwable) { mutableState.value = mutableState.value.copy(mcpStatus = statusFor(e)) }
-    private fun updateSubagentsFailure(e: Throwable) { mutableState.value = mutableState.value.copy(subagentsStatus = statusFor(e)) }
-    private fun updateMemoryFailure(e: Throwable) { mutableState.value = mutableState.value.copy(memoryStatus = statusFor(e)) }
-    private fun updateTasksFailure(e: Throwable) { mutableState.value = mutableState.value.copy(tasksStatus = statusFor(e)) }
+    private fun updateProviderFailure(e: Throwable) { mutableState.update { it.copy(providerStatus = statusFor(e)) } }
+    private fun updateFilesFailure(e: Throwable) { mutableState.update { it.copy(filesStatus = statusFor(e)) } }
+    private fun updateSkillsFailure(e: Throwable) { mutableState.update { it.copy(skillsStatus = statusFor(e)) } }
+    private fun updateMcpFailure(e: Throwable) { mutableState.update { it.copy(mcpStatus = statusFor(e)) } }
+    private fun updateSubagentsFailure(e: Throwable) { mutableState.update { it.copy(subagentsStatus = statusFor(e)) } }
+    private fun updateMemoryFailure(e: Throwable) { mutableState.update { it.copy(memoryStatus = statusFor(e)) } }
+    private fun updateTasksFailure(e: Throwable) { mutableState.update { it.copy(tasksStatus = statusFor(e)) } }
 }
