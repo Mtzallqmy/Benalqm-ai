@@ -1,18 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">moataz ai</string>
-    <string name="server_setup_description">اربط تطبيق أندرويد بخادم moataz ai. يُفضّل HTTPS، أما HTTP الخاص فمخصص لشبكة محلية موثوقة فقط.</string>
-    <string name="server_url_hint">https://your-server.example أو 192.168.1.20:2026</string>
-    <string name="save_and_open">حفظ وفتح</string>
-    <string name="clear_server">مسح الخادم</string>
-    <string name="server_cleared">تم مسح عنوان الخادم المحفوظ</string>
-    <string name="http_local_warning">أمان: استخدم HTTP فقط داخل شبكة خاصة موثوقة، ولا تعرض Gateway المحلي مباشرةً للإنترنت العام.</string>
-    <string name="invalid_server_url">أدخل عنوان خادم صحيحًا يبدأ بـ http:// أو https://.</string>
-    <string name="no_app_for_link">لا يوجد تطبيق متاح لفتح هذا الرابط.</string>
-    <string name="unsafe_page_blocked">تم حظر صفحة غير آمنة.</string>
-    <string name="no_file_picker">لا يوجد منتقي ملفات متاح.</string>
-    <string name="download_started">بدأ التنزيل</string>
-    <string name="download_failed">تعذر بدء التنزيل.</string>
-    <string name="download_permission_denied">يلزم إذن التخزين لحفظ التنزيلات على Android 8/9.</string>
-    <string name="server_settings_shortcut">إعدادات الخادم</string>
+    <string name="nav_chat">المحادثة</string>
+    <string name="nav_threads">المحادثات</string>
+    <string name="nav_flow">التدفق</string>
+    <string name="nav_settings">الإعدادات</string>
+
+    <string name="new_conversation">محادثة جديدة</string>
+    <string name="welcome_title">ما الذي سنعمل عليه؟</string>
+    <string name="welcome_body">هذا عميل أندرويد أصلي يتصل بنفس محرك DeerFlow ومهاراته وأدواته ووكلائه الفرعيين ونماذجه المستخدمة في moataz ai.</string>
+    <string name="connect_to_server">اتصال moataz ai</string>
+    <string name="configure_server">اضبط الـ Gateway مرة واحدة، ثم اعمل من هنا مباشرة — بدون WebView.</string>
+    <string name="open_settings">فتح الإعدادات</string>
+    <string name="composer_hint">اطلب من moataz ai…</string>
+    <string name="send">إرسال</string>
+    <string name="stop">إيقاف</string>
+    <string name="thinking">التفكير</string>
+    <string name="model">النموذج</string>
+    <string name="no_models">لا توجد نماذج متاحة</string>
+    <string name="default_model">النموذج الافتراضي</string>
+    <string name="tool_calls">الأدوات: %1$s</string>
+
+    <string name="threads_title">المحادثات</string>
+    <string name="threads_subtitle">هذه محادثات DeerFlow الفعلية المحمّلة من الـ Gateway وليست دردشة محلية وهمية.</string>
+    <string name="refresh">تحديث</string>
+    <string name="no_threads">لا توجد محادثات بعد.</string>
+    <string name="loading">جارٍ التحميل…</string>
+
+    <string name="flow_title">تدفق التشغيل</string>
+    <string name="flow_subtitle">رؤية مباشرة للمسار: أندرويد ← Gateway ← وكيل DeerFlow ← النموذج والأدوات.</string>
+    <string name="android_client">عميل أندرويد</string>
+    <string name="gateway">Gateway</string>
+    <string name="agent_runtime">محرك الوكيل</string>
+    <string name="model_provider">مزود النموذج</string>
+    <string name="latency">زمن الاستجابة</string>
+    <string name="models">النماذج</string>
+    <string name="events">الأحداث</string>
+    <string name="active_thread">المحادثة النشطة</string>
+    <string name="run_state">حالة التشغيل</string>
+    <string name="recent_events">أحداث التشغيل الأخيرة</string>
+    <string name="no_events">لا توجد أحداث تشغيل بعد.</string>
+
+    <string name="status_connected">متصل</string>
+    <string name="status_checking">جارٍ الفحص</string>
+    <string name="status_offline">غير متصل</string>
+    <string name="status_unauthorized">يلزم تسجيل الدخول</string>
+    <string name="status_not_configured">غير مضبوط</string>
+    <string name="status_degraded">اتصال محدود</string>
+
+    <string name="settings_title">الإعدادات</string>
+    <string name="connection_section">اتصال الـ Gateway</string>
+    <string name="server_origin">عنوان الخادم</string>
+    <string name="server_url_hint">http://192.168.1.20:2026 أو https://ai.example.com</string>
+    <string name="access_token">رمز الوصول (PAT)</string>
+    <string name="token_saved">يوجد رمز وصول مشفّر محفوظ على هذا الجهاز.</string>
+    <string name="token_optional_hint">اتركه فارغًا إذا كانت المصادقة معطلة، أو أدخل PAT عندما يتطلب الـ Gateway تسجيل الدخول.</string>
+    <string name="save_connect">حفظ وفحص الاتصال</string>
+    <string name="remove_token">حذف الرمز المحفوظ</string>
+    <string name="security_lan_warning">يسمح بـ HTTP داخل الشبكات المحلية الموثوقة فقط. استخدم HTTPS خارج شبكتك المحلية.</string>
+    <string name="preferences">تفضيلات الوكيل</string>
+    <string name="thinking_mode">تفعيل التفكير عندما يدعمه النموذج المحدد</string>
+    <string name="about">حول</string>
+    <string name="about_text">moataz ai واجهة منتج جديدة مبنية على مشروع DeerFlow مفتوح المصدر. يبقى محرك الوكلاء وبيئة التشغيل والمهارات الأصلية منسوبة إلى مصدرها الأصلي.</string>
+    <string name="upstream_source">المصدر: ByteDance DeerFlow · ترخيص MIT</string>
+    <string name="version">الإصدار %1$s</string>
+    <string name="native_client">عميل أصلي مبني بـ Kotlin وJetpack Compose</string>
+    <string name="android_support">Android 8.0 (API 26) وما بعده</string>
+
+    <string name="dismiss">إغلاق</string>
+    <string name="copy_diagnostics">نسخ التشخيص</string>
+    <string name="diagnostics_copied">تم نسخ التشخيص</string>
 </resources>
