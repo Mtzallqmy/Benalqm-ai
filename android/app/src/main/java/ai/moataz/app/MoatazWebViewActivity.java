@@ -1,7 +1,6 @@
 package ai.moataz.app;
 
 import android.Manifest;
-import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
@@ -22,7 +21,10 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-public class MoatazWebViewActivity extends Activity {
+import androidx.activity.ComponentActivity;
+import androidx.activity.OnBackPressedCallback;
+
+public class MoatazWebViewActivity extends ComponentActivity {
     private static final int FILE_CHOOSER_REQUEST = 4101;
     private static final int STORAGE_PERMISSION_REQUEST = 4102;
 
@@ -47,8 +49,23 @@ public class MoatazWebViewActivity extends Activity {
         setContentView(webView);
 
         configureWebView(url);
+        configureBackNavigation();
         if (savedInstanceState == null) webView.loadUrl(url);
         else webView.restoreState(savedInstanceState);
+    }
+
+    private void configureBackNavigation() {
+        getOnBackPressedDispatcher().addCallback(this, new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                if (webView != null && webView.canGoBack()) {
+                    webView.goBack();
+                    return;
+                }
+                setEnabled(false);
+                getOnBackPressedDispatcher().onBackPressed();
+            }
+        });
     }
 
     private void configureWebView(String initialUrl) {
@@ -181,13 +198,6 @@ public class MoatazWebViewActivity extends Activity {
     protected void onSaveInstanceState(Bundle outState) {
         if (webView != null) webView.saveState(outState);
         super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    @SuppressWarnings("deprecation")
-    public void onBackPressed() {
-        if (webView != null && webView.canGoBack()) webView.goBack();
-        else super.onBackPressed();
     }
 
     @Override
