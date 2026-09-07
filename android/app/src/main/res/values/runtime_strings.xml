@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="runtime_center">Runtime</string>
+    <string name="runtime_subtitle">Goals, agents, MCP tasks and durable sub-agent batches</string>
+    <string name="runtime_features">Capabilities</string>
+    <string name="runtime_goal">Goal</string>
+    <string name="runtime_agents">Agents</string>
+    <string name="runtime_mcp_tasks">MCP tasks</string>
+    <string name="runtime_batches">Sub-agent batches</string>
+    <string name="feature_on">Available</string>
+    <string name="feature_off">Disabled</string>
+    <string name="agents_api">Custom Agents API</string>
+    <string name="browser_control">Live browser control</string>
+    <string name="mcp_task_runtime">Durable MCP tasks</string>
+    <string name="batch_repository">Batch history</string>
+    <string name="batch_worker">Batch worker</string>
+    <string name="batch_capacity">Capacity: %1$d</string>
+    <string name="no_active_goal">No active goal for this conversation.</string>
+    <string name="goal_objective">Completion condition</string>
+    <string name="goal_max_continuations">Maximum automatic continuations</string>
+    <string name="set_goal">Set goal</string>
+    <string name="clear_goal">Clear goal</string>
+    <string name="goal_requires_thread">Open a conversation before setting a goal.</string>
+    <string name="no_agents">No custom agents are configured.</string>
+    <string name="agents_disabled">The custom-agent management API is disabled in config.yaml.</string>
+    <string name="create_agent">Create agent</string>
+    <string name="agent_model_optional">Model override (optional)</string>
+    <string name="agent_soul">SOUL / behavioral instructions</string>
+    <string name="thinking_default">Thinking enabled by default</string>
+    <string name="reasoning_effort">Reasoning effort</string>
+    <string name="edit_agent">Edit agent</string>
+    <string name="no_mcp_tasks">No durable MCP tasks for this conversation.</string>
+    <string name="mcp_tasks_disabled">Durable MCP task runtime is disabled.</string>
+    <string name="cancel_task">Cancel task</string>
+    <string name="tracking_degraded">Tracking degraded</string>
+    <string name="cancel_requested">Cancellation requested</string>
+    <string name="no_batches">No durable sub-agent batches for this conversation.</string>
+    <string name="batch_history_disabled">Sub-agent batch persistence is unavailable.</string>
+    <string name="batch_id">Batch %1$s</string>
+    <string name="view_items">View items</string>
+    <string name="cancel_batch">Cancel batch</string>
+    <string name="retry">Retry</string>
+    <string name="batch_item">Item %1$s</string>
+    <string name="thread_required">This capability requires an active conversation.</string>
+    <string name="runtime_refresh">Refresh runtime</string>
+</resources>
