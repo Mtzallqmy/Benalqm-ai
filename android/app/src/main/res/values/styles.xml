@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.MoatazAI" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:statusBarColor">@color/moataz_ink</item>
+        <item name="android:navigationBarColor">@color/moataz_ink</item>
+        <item name="android:windowBackground">@color/moataz_ink</item>
+        <item name="android:colorAccent">@color/moataz_violet</item>
+    </style>
+    <style name="Theme.MoatazAI.Translucent" parent="android:style/Theme.Material.Light.NoActionBar">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:colorAccent">@color/moataz_violet</item>
+    </style>
+</resources>

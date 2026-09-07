@@ -13,6 +13,9 @@ services:
 
   frontend:
     container_name: moataz-ai-frontend
+    environment:
+      - MOATAZ_ANDROID_PACKAGE_NAME=${MOATAZ_ANDROID_PACKAGE_NAME:-ai.moataz.app}
+      - MOATAZ_ANDROID_CERT_SHA256=${MOATAZ_ANDROID_CERT_SHA256:-}
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 10s

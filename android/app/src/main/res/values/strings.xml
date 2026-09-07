@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">moataz ai</string>
+    <string name="server_setup_description">Connect this Android app to your moataz ai server. HTTPS is recommended; private HTTP addresses are intended only for a trusted LAN.</string>
+    <string name="server_url_hint">https://your-server.example or 192.168.1.20:2026</string>
+    <string name="save_and_open">Save and open</string>
+    <string name="clear_server">Clear server</string>
+    <string name="server_cleared">Saved server cleared</string>
+    <string name="http_local_warning">Security: use HTTP only on a trusted private network. Never expose the local Gateway directly to the public internet.</string>
+    <string name="invalid_server_url">Enter a valid http:// or https:// server address.</string>
+    <string name="no_app_for_link">No app is available to open this link.</string>
+    <string name="unsafe_page_blocked">Unsafe page blocked.</string>
+    <string name="no_file_picker">No file picker is available.</string>
+    <string name="download_started">Download started</string>
+    <string name="download_failed">Download could not be started.</string>
+    <string name="download_permission_denied">Storage permission is required to save downloads on Android 8/9.</string>
+    <string name="server_settings_shortcut">Server settings</string>
+</resources>

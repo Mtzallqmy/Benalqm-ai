@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="server-settings"
+        android:enabled="true"
+        android:icon="@mipmap/ic_launcher"
+        android:shortcutShortLabel="@string/server_settings_shortcut"
+        android:shortcutLongLabel="@string/server_settings_shortcut">
+        <intent
+            android:action="ai.moataz.app.SETTINGS"
+            android:targetPackage="ai.moataz.app"
+            android:targetClass="ai.moataz.app.MainActivity" />
+    </shortcut>
+</shortcuts>

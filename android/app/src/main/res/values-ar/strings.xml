@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">moataz ai</string>
+    <string name="server_setup_description">اربط تطبيق أندرويد بخادم moataz ai. يُفضّل HTTPS، أما HTTP الخاص فمخصص لشبكة محلية موثوقة فقط.</string>
+    <string name="server_url_hint">https://your-server.example أو 192.168.1.20:2026</string>
+    <string name="save_and_open">حفظ وفتح</string>
+    <string name="clear_server">مسح الخادم</string>
+    <string name="server_cleared">تم مسح عنوان الخادم المحفوظ</string>
+    <string name="http_local_warning">أمان: استخدم HTTP فقط داخل شبكة خاصة موثوقة، ولا تعرض Gateway المحلي مباشرةً للإنترنت العام.</string>
+    <string name="invalid_server_url">أدخل عنوان خادم صحيحًا يبدأ بـ http:// أو https://.</string>
+    <string name="no_app_for_link">لا يوجد تطبيق متاح لفتح هذا الرابط.</string>
+    <string name="unsafe_page_blocked">تم حظر صفحة غير آمنة.</string>
+    <string name="no_file_picker">لا يوجد منتقي ملفات متاح.</string>
+    <string name="download_started">بدأ التنزيل</string>
+    <string name="download_failed">تعذر بدء التنزيل.</string>
+    <string name="download_permission_denied">يلزم إذن التخزين لحفظ التنزيلات على Android 8/9.</string>
+    <string name="server_settings_shortcut">إعدادات الخادم</string>
+</resources>
