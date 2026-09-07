@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="runtime_center">محرك التشغيل</string>
+    <string name="runtime_subtitle">الأهداف والوكلاء ومهام MCP ودفعات الوكلاء الفرعيين</string>
+    <string name="runtime_features">القدرات</string>
+    <string name="runtime_goal">الهدف</string>
+    <string name="runtime_agents">الوكلاء</string>
+    <string name="runtime_mcp_tasks">مهام MCP</string>
+    <string name="runtime_batches">دفعات الوكلاء الفرعيين</string>
+    <string name="feature_on">متاح</string>
+    <string name="feature_off">معطّل</string>
+    <string name="agents_api">واجهة إدارة الوكلاء المخصصين</string>
+    <string name="browser_control">التحكم الحي بالمتصفح</string>
+    <string name="mcp_task_runtime">مهام MCP الدائمة</string>
+    <string name="batch_repository">سجل الدفعات</string>
+    <string name="batch_worker">عامل تنفيذ الدفعات</string>
+    <string name="batch_capacity">السعة: %1$d</string>
+    <string name="no_active_goal">لا يوجد هدف نشط لهذه المحادثة.</string>
+    <string name="goal_objective">شرط إكمال الهدف</string>
+    <string name="goal_max_continuations">الحد الأقصى للاستمرارات التلقائية</string>
+    <string name="set_goal">تعيين الهدف</string>
+    <string name="clear_goal">مسح الهدف</string>
+    <string name="goal_requires_thread">افتح محادثة قبل تعيين هدف.</string>
+    <string name="no_agents">لا توجد وكلاء مخصصة.</string>
+    <string name="agents_disabled">واجهة إدارة الوكلاء المخصصين معطلة في config.yaml.</string>
+    <string name="create_agent">إنشاء وكيل</string>
+    <string name="agent_model_optional">نموذج مخصص (اختياري)</string>
+    <string name="agent_soul">SOUL / التعليمات السلوكية</string>
+    <string name="thinking_default">تفعيل التفكير افتراضيًا</string>
+    <string name="reasoning_effort">مستوى الاستدلال</string>
+    <string name="edit_agent">تعديل الوكيل</string>
+    <string name="no_mcp_tasks">لا توجد مهام MCP دائمة لهذه المحادثة.</string>
+    <string name="mcp_tasks_disabled">محرك مهام MCP الدائمة معطّل.</string>
+    <string name="cancel_task">إلغاء المهمة</string>
+    <string name="tracking_degraded">تتبع غير مستقر</string>
+    <string name="cancel_requested">طُلب الإلغاء</string>
+    <string name="no_batches">لا توجد دفعات وكلاء فرعيين لهذه المحادثة.</string>
+    <string name="batch_history_disabled">تخزين دفعات الوكلاء الفرعيين غير متاح.</string>
+    <string name="batch_id">الدفعة %1$s</string>
+    <string name="view_items">عرض العناصر</string>
+    <string name="cancel_batch">إلغاء الدفعة</string>
+    <string name="retry">إعادة المحاولة</string>
+    <string name="batch_item">العنصر %1$s</string>
+    <string name="thread_required">تتطلب هذه القدرة محادثة نشطة.</string>
+    <string name="runtime_refresh">تحديث محرك التشغيل</string>
+</resources>
