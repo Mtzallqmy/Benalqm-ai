@@ -1,46 +1,35 @@
-import java.net.URI
-
 plugins {
     id("com.android.application")
+    id("org.jetbrains.kotlin.android")
+    id("org.jetbrains.kotlin.plugin.compose")
 }
 
-fun escapedJavaString(value: String): String =
-    "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\""
-
-val defaultOrigin = providers.gradleProperty("moatazOrigin").orElse("").get().trim().trimEnd('/')
-val trustedOrigin = providers.gradleProperty("moatazTrustedOrigin")
-    .orElse("https://app.moataz.ai")
+val defaultOrigin = providers.gradleProperty("moatazOrigin")
+    .orElse("")
     .get()
     .trim()
     .trimEnd('/')
-val trustedHost = runCatching { URI(trustedOrigin).host }.getOrNull() ?: "app.moataz.ai"
 
 android {
     namespace = "ai.moataz.app"
-    compileSdk = 36
+    compileSdk = 37
     buildToolsVersion = "36.0.0"
 
     defaultConfig {
         applicationId = "ai.moataz.app"
         minSdk = 26
         targetSdk = 36
-        versionCode = 10000
-        versionName = "1.0.0"
+        versionCode = 11000
+        versionName = "1.1.0"
 
-        buildConfigField("String", "DEFAULT_ORIGIN", escapedJavaString(defaultOrigin))
-        buildConfigField("String", "TRUSTED_ORIGIN", escapedJavaString(trustedOrigin))
-        resValue("string", "twa_default_url", "$trustedOrigin/workspace")
-        resValue(
-            "string",
-            "asset_statements",
-            "[{\"relation\":[\"delegate_permission/common.handle_all_urls\"],\"target\":{\"namespace\":\"web\",\"site\":\"$trustedOrigin\"}}]",
-        )
-        manifestPlaceholders["trustedHost"] = trustedHost
+        buildConfigField("String", "DEFAULT_ORIGIN", "\"${defaultOrigin.replace("\\", "\\\\").replace("\"", "\\\"")}\"")
+        buildConfigField("String", "UPSTREAM_PROJECT", "\"DeerFlow\"")
+        buildConfigField("String", "UPSTREAM_REPOSITORY", "\"https://github.com/bytedance/deer-flow\"")
     }
 
     buildFeatures {
         buildConfig = true
-        resValues = true
+        compose = true
     }
 
     buildTypes {
@@ -68,8 +57,30 @@ android {
     }
 }
 
+kotlin {
+    jvmToolchain(17)
+}
+
 dependencies {
-    implementation("androidx.activity:activity:1.10.1")
-    implementation("com.google.androidbrowserhelper:androidbrowserhelper:2.7.2")
+    val composeBom = platform("androidx.compose:compose-bom:2026.08.00")
+    implementation(composeBom)
+    androidTestImplementation(composeBom)
+
+    implementation("androidx.core:core-ktx:1.17.0")
+    implementation("androidx.activity:activity-compose:1.13.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-compose:2.10.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")
+    implementation("androidx.compose.ui:ui")
+    implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation("androidx.compose.foundation:foundation")
+    implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
+
+    val okhttpBom = platform("com.squareup.okhttp3:okhttp-bom:5.5.0")
+    implementation(okhttpBom)
+    implementation("com.squareup.okhttp3:okhttp")
+    debugImplementation("com.squareup.okhttp3:logging-interceptor")
+
+    debugImplementation("androidx.compose.ui:ui-tooling")
     testImplementation("junit:junit:4.13.2")
 }
