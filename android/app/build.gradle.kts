@@ -12,7 +12,7 @@ val defaultOrigin = providers.gradleProperty("moatazOrigin")
 
 android {
     namespace = "ai.moataz.app"
-    compileSdk = 37
+    compileSdk = 36
     buildToolsVersion = "36.0.0"
 
     defaultConfig {
@@ -62,7 +62,7 @@ kotlin {
 }
 
 dependencies {
-    val composeBom = platform("androidx.compose:compose-bom:2026.08.00")
+    val composeBom = platform("androidx.compose:compose-bom:2026.06.00")
     implementation(composeBom)
     androidTestImplementation(composeBom)
 
